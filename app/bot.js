@@ -27,6 +27,19 @@ client.on('message', async (msg) => {
   }
 });
 
+const express = require('express');
+const app = express();
+const port = 3000;
+
+//boşver
+app get('/', (req, res) => {
+  res.sendStatus(200);
+});
+
+app.listen(port, () => {
+  console.log(' sunucu ${port} numaralı bağlı');
+
+
 // Botu başlat
 client.login(process.env.token)
   .then(() => {
