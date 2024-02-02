@@ -17,6 +17,7 @@
     "discord-bots-api": "^0.0.2",
     "discord.js": "^12.2.0",
     "dotenv": "^16.4.1",
+    "express": "^4.10.2",
     "express": "^4.17.1",
     "fs": "^0.0.2",
     "google": "^2.1.0",
