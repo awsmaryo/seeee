@@ -37,8 +37,8 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(' sunucu ${port} numaralı bağlı');
-
+  console.log(`sunucu ${port} numaralı bağlı`);
+});
 
 // Botu başlat
 client.login(process.env.token)
