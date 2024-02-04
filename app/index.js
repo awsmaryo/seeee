@@ -32,7 +32,7 @@ const app = express();
 const port = 3000;
 
 //boşver
-app get('/', (req, res) => {
+app.get('/', (req, res) => {
   res.sendStatus(200);
 });
 
