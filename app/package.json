@@ -5,9 +5,9 @@
   "name": "hello-express",
   "version": "0.0.1",
   "description": "xqreazy codes",
-  "main": "index.js",
+  "main": "index.py",
   "scripts": {
-    "start": "node index.js"
+    "start": "python index.py"
   },
   "dependencies": {
     "bad-words": "^3.0.3",
