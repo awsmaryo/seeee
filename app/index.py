@@ -1,16 +1,16 @@
-# from transformers import GPT2LMHeadModel, GPT2Tokenizer
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import discord
 import random
 from discord.ext import commands
 import nest_asyncio
 import torch
-#from pyngrok import ngrok
+from pyngrok import ngrok
 from discord.ext import commands, tasks
-#from keep_alive import keep_alive
-#keep_alive()
 
-#intents = discord.Intents.all()
-#client = discord.Client(intents=intents)
+
+
+intents = discord.Intents.all()
+client = discord.Client(intents=intents)
 
 #model_name = "EleutherAI/gpt-neo-125M"
 #model = GPT2LMHeadModel.from_pretrained(model_name)
@@ -19,7 +19,8 @@ from discord.ext import commands, tasks
 # Asenkron işlemleri desteklemek için nest_asyncio'yu aktifleştir
 nest_asyncio.apply()
 
-#ngrok.set_auth_token("2OXyXwBQ7hKFTV2jdhu3XI0Hvcd_hAUHm3VcaXJsrJ9TtrKn")
+ngrok.set_auth_token("2OXyXwBQ7hKFTV2jdhu3XI0Hvcd_hAUHm3VcaXJsrJ9TtrKn")
+
 
 # Discord botunu oluştur
 intents = discord.Intents.default()
@@ -28,14 +29,14 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 #model.eval()
 
-#public_url = ngrok.connect(8001)
+public_url = ngrok.connect(8001)
 
 @bot.event
 async def on_ready():
     guild_id = 1202901778715246673  # Sunucu ID'si
     channel_id = 1204132912702689400  # Sesli kanal ID'si
 
-    guild = discord.utils.get(bot.guilds, id=guild_id)
+    guild = discord.utils.get(client.guilds, id=guild_id)
 
     if guild:
         channel = discord.utils.get(guild.voice_channels, id=channel_id)
@@ -50,9 +51,28 @@ async def on_ready():
     else:
         print("Belirtilen sunucu bulunamadı.")
 
+async def on_message(message):
+    if message.author.bot:
+        return  # Botun kendi mesajlarına tepki verme
+
+    if message.content.lower() in ['!maç', '!şut', '!kurtar', '!gol', '!sağ', '!sol']:
+        if message.author.id not in onay_verildi:
+            await message.channel.send(onay_mesaji)
+
+            def check_onay(msg):
+                return msg.author == message.author and msg.content.lower() in ['evt', 'evet', 'aynen', 'ayn', 'eved', 'eet', 'ok', 'ye', 'yep', 'yeah', 'yes']
+
+            try:
+                onay = await bot.wait_for('message', timeout=30.0, check=check_onay)
+            except asyncio.TimeoutError:
+                await message.channel.send('Onay alınamadığı için komut kullanımına izin verilmiyor.')
+            else:
+                onay_verildi.add(message.author.id)
+                await message.channel.send('Onay alındı. Şimdi komutları kullanabilirsiniz.')
+
 async def on_ready():
     print(f'We have logged in as {bot.user}')
-    #print(f'Public URL: {public_url}')
+    print(f'Public URL: {public_url}')
 
     # Durum değiştirme görevini başlat
     change_status.start()
@@ -174,8 +194,73 @@ async def create_channel(ctx, count: int, category_name: str = 'guzel'):
     # Kullanıcının DM'ine cevabı gönder
     #await ctx.author.send("Modelin Cevabı: " + decoding_result)
 
+onay_mesaji = 'Sözleşmeyi kabul etmeyi onaylıyor musunuz?'
+
+onay_verildi = set()
+
+onay_verildi = set()
+onay_mesaji = "Sözleşmeyi kabul etmeyi onaylıyor musunuz? (evt/evet/aynen)"
+
+@bot.command(name='maç', help='Zorluk seviyesine göre bir maç oyna.')
+async def mac(ctx, zorluk_seviyesi: int):
+    if ctx.author.id in onay_verildi:
+      if zorluk_seviyesi < 1 or zorluk_seviyesi > 5:
+        await ctx.send('Geçersiz zorluk seviyesi! Lütfen 1 ile 5 arasında bir sayı girin.')
+        return
+
+    gol_olma_ihtimali = {
+        1: 0.85,
+        2: 0.70,
+        3: 0.50,
+        4: 0.35,
+        5: 0.10
+    }.get(zorluk_seviyesi, 0.10)
+
+    kurtarma_sansi = random.uniform(0.1, 0.9) - (zorluk_seviyesi * 0.1)
+
+    penalti_durumu = f'Zorluk Seviyesi: {zorluk_seviyesi}\n'
+    penalti_durumu += f'Kaleci Kurtarma Şansı: {kurtarma_sansi:.2%}\n'
+    penalti_durumu += f'Gol Olma İhtimali: {gol_olma_ihtimali:.2%}\n\n'
+    penalti_durumu += 'Kaleci 🧤\nTop ⚽'
+
+    await ctx.send(penalti_durumu)
+    await ctx.send('Ne yapacaksın? !şut mu, !kaleci mi?')
+
+    def check(message):
+        return message.author == ctx.author and message.content.lower() in ['!şut', '!kaleci']
+
+    try:
+        secim = await bot.wait_for('message', timeout=5.0, check=check)
+    except asyncio.TimeoutError:
+        await ctx.send('Zaman doldu, seçim yapılmadı.')
+        return
+
+    if secim.content.lower() == '!şut':
+        await ctx.send(':goal: :goal: :goal:\n\n:soccer:\n\nNereye atacaksın? !sağ veya !sol yazarak belirt.')
+
+        def check_yon(message):
+            return message.author == ctx.author and message.content.lower() in ['!sağ', '!sol']
+
+        try:
+            yon_secim = await bot.wait_for('message', timeout=5.0, check=check_yon)
+        except asyncio.TimeoutError:
+            await ctx.send('Zaman doldu, yön seçimi yapılmadı.')
+            return
+
+        gol_olma_sansi = random.uniform(0.0, 1.0)
+
+        if gol_olma_sansi < gol_olma_ihtimali:
+            await ctx.send(':goal: :goal: :goal:\n\n:soccer:\n\nGol! Tebrikler, top ağlarda!')
+        else:
+            await ctx.send(':( Kaleci çabuk davrandı ve kurtardı!')
+
+    elif secim.content.lower() == '!kaleci':
+        await ctx.send(':( Kaleci daha yok! Şut atmaya devam et. !şut yaz.')
+
+
 # Botu çalıştır
-bot.run('MTIwMjkwMDU2MDg5MDY5MTY3NA.GmmAwa.bmuJHJdZy1-ksirJ5flMWQQFdkkwAllFpWPIsY')
+bot.run('MTIwMjkwMDU2MDg5MDY5MTY3NA.GHBHJB.7hWVKEH2fhGEIMVqQk4Wa77vwkdI8T6ycRPxBY')
 
 while True:
     pass
+
