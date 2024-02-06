@@ -178,23 +178,23 @@ async def create_channel(ctx, count: int, category_name: str = 'guzel'):
     #await ctx.author.send("Modelin Cevabı: " + decoding_result)
 
 # Kullanıcı onay verdiğinde çağrılacak fonksiyon
-def sozlesme_onaylandi(kullanici_id, veri):
-    # Verileri JSON dosyasına yaz
-    with open(f'{kullanici_id}_sozlesme.json', 'w') as f:
-        json.dump(veri, f)
-
-    # Google Drive kimlik doğrulaması
-    gauth = GoogleAuth()
-    gauth.LocalWebserverAuth()  # Otomatik kimlik doğrulaması açıp tarayıcı açılır
+#def sozlesme_onaylandi(kullanici_id, veri):
+#    # Verileri JSON dosyasına yaz
+#    #with open(f'{kullanici_id}_sozlesme.json', 'w') as f:
+#        #json.dump(veri, f)
+#
+#    # Google Drive kimlik doğrulaması
+#    #gauth = GoogleAuth()
+#    #gauth.LocalWebserverAuth()  # Otomatik kimlik doğrulaması açıp tarayıcı açılır
 
     # Google Drive dosya yüklemesi
-    drive = GoogleDrive(gauth)
-    file = drive.CreateFile({'title': f'{kullanici_id}_sozlesme.json'})  # Dosya adını belirt
-    file.SetContentFile(f'{kullanici_id}_sozlesme.json')  # Yüklenecek dosyanın adını belirt
-    file.Upload()  # Dosyayı Google Drive'a yükle
+#    #drive = GoogleDrive(gauth)
+#    #file = drive.CreateFile({'title': f'{kullanici_id}_sozlesme.json'})  # Dosya adını belirt
+    #file.SetContentFile(f'{kullanici_id}_sozlesme.json')  # Yüklenecek dosyanın adını belirt
+    #file.Upload()  # Dosyayı Google Drive'a yükle
 
     # Kullanıcıya dosyanın bağlantısını gönder
-    return file['alternateLink']  # Dosyanın bağlantısını döndür
+    #return file['alternateLink']  # Dosyanın bağlantısını döndür
 
 onay_mesaji = 'Sözleşmeyi kabul etmeyi onaylıyor musunuz?'
 
