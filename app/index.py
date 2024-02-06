@@ -1,4 +1,4 @@
-
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import discord
 import random
 from discord.ext import commands
@@ -6,11 +6,8 @@ import nest_asyncio
 import torch
 from pyngrok import ngrok
 from discord.ext import commands, tasks
-from dotenv import load_dotenv
-import os
 
-# .env dosyasını yükleyin
-load_dotenv()
+
 
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
@@ -53,25 +50,6 @@ async def on_ready():
             print("Belirtilen sesli kanal bulunamadı.")
     else:
         print("Belirtilen sunucu bulunamadı.")
-
-async def on_message(message):
-    if message.author.bot:
-        return  # Botun kendi mesajlarına tepki verme
-
-    if message.content.lower() in ['!maç', '!şut', '!kurtar', '!gol', '!sağ', '!sol']:
-        if message.author.id not in onay_verildi:
-            await message.channel.send(onay_mesaji)
-
-            def check_onay(msg):
-                return msg.author == message.author and msg.content.lower() in ['evt', 'evet', 'aynen', 'ayn', 'eved', 'eet', 'ok', 'ye', 'yep', 'yeah', 'yes']
-
-            try:
-                onay = await bot.wait_for('message', timeout=30.0, check=check_onay)
-            except asyncio.TimeoutError:
-                await message.channel.send('Onay alınamadığı için komut kullanımına izin verilmiyor.')
-            else:
-                onay_verildi.add(message.author.id)
-                await message.channel.send('Onay alındı. Şimdi komutları kullanabilirsiniz.')
 
 async def on_ready():
     print(f'We have logged in as {bot.user}')
@@ -204,6 +182,48 @@ onay_verildi = set()
 onay_verildi = set()
 onay_mesaji = "Sözleşmeyi kabul etmeyi onaylıyor musunuz? (evt/evet/aynen)"
 
+@bot.event
+async def on_message(message):
+    if message.author.bot:
+        return  # Botun kendi mesajlarına tepki verme
+
+    if message.content.lower() in ['!maç', '!şut', '!kurtar', '!gol', '!sağ', '!sol']:
+        if message.author.id not in onay_verildi:
+            await message.channel.send(onay_mesaji)
+
+            def check_onay(msg):
+                return msg.author == message.author and msg.content.lower() in ['evt', 'evet', 'aynen', 'ayn', 'eved', 'eet', 'ok', 'ye', 'yep', 'yeah', 'yes']
+
+            try:
+                onay = await bot.wait_for('message', timeout=30.0, check=check_onay)
+            except asyncio.TimeoutError:
+                await message.channel.send('Onay alınamadığı için komut kullanımına izin verilmiyor.')
+            else:
+                onay_verildi.add(message.author.id)
+                await message.channel.send('Onay alındı. Şimdi komutları kullanabilirsiniz.')
+
+# JSON verileri
+veriler = {
+    "kullanici_id": 12345,
+    "para": 200
+}
+
+# JSON dosyası yolu
+dosya_yolu = '/content/drive/MyDrive/Colab Veritabanı/veriler.json'
+
+# JSON verilerini dosyaya yazma
+with open(dosya_yolu, 'w') as dosya:
+    json.dump(veriler, dosya)
+
+print("JSON verileri başarıyla dosyaya yazıldı.")
+
+            finally:
+                await asyncio.sleep(60)
+                onay_verildi.remove(message.author.id)
+    else:
+        await bot.process_commands(message)
+
+
 @bot.command(name='maç', help='Zorluk seviyesine göre bir maç oyna.')
 async def mac(ctx, zorluk_seviyesi: int):
     if ctx.author.id in onay_verildi:
@@ -262,7 +282,7 @@ async def mac(ctx, zorluk_seviyesi: int):
 
 
 # Botu çalıştır
-bot.run(os.getenv('token'))
+bot.run('MTIwMjkwMDU2MDg5MDY5MTY3NA.GHBHJB.7hWVKEH2fhGEIMVqQk4Wa77vwkdI8T6ycRPxBY')
 
 while True:
     pass
