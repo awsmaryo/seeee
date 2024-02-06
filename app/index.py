@@ -282,7 +282,7 @@ async def mac(ctx, zorluk_seviyesi: int):
 
 
 # Botu çalıştır
-bot.run('MTIwMjkwMDU2MDg5MDY5MTY3NA.GHBHJB.7hWVKEH2fhGEIMVqQk4Wa77vwkdI8T6ycRPxBY')
+bot.run('MTIwMjkwMDU2MDg5MDY5MTY3NA.GGCnQT.D0Gqv-q-EZqWCH0FmX9V8NOkHocMYMOjCHgaMQ')
 
 while True:
     pass
