@@ -177,12 +177,31 @@ async def create_channel(ctx, count: int, category_name: str = 'guzel'):
     # Kullanıcının DM'ine cevabı gönder
     #await ctx.author.send("Modelin Cevabı: " + decoding_result)
 
+# Kullanıcı onay verdiğinde çağrılacak fonksiyon
+def sozlesme_onaylandi(kullanici_id, veri):
+    # Verileri JSON dosyasına yaz
+    with open(f'{kullanici_id}_sozlesme.json', 'w') as f:
+        json.dump(veri, f)
+
+    # Google Drive kimlik doğrulaması
+    gauth = GoogleAuth()
+    gauth.LocalWebserverAuth()  # Otomatik kimlik doğrulaması açıp tarayıcı açılır
+
+    # Google Drive dosya yüklemesi
+    drive = GoogleDrive(gauth)
+    file = drive.CreateFile({'title': f'{kullanici_id}_sozlesme.json'})  # Dosya adını belirt
+    file.SetContentFile(f'{kullanici_id}_sozlesme.json')  # Yüklenecek dosyanın adını belirt
+    file.Upload()  # Dosyayı Google Drive'a yükle
+
+    # Kullanıcıya dosyanın bağlantısını gönder
+    return file['alternateLink']  # Dosyanın bağlantısını döndür
+
 onay_mesaji = 'Sözleşmeyi kabul etmeyi onaylıyor musunuz?'
 
 onay_verildi = set()
 
 onay_verildi = set()
-onay_mesaji = "Sözleşmeyi kabul etmeyi onaylıyor musunuz? (evt/evet/aynen)"
+onay_mesaji = "Sözleşmeyi kabul etmeyi onaylıyor musunuz?"
 
 @bot.event
 async def on_message(message):
@@ -204,27 +223,10 @@ async def on_message(message):
                 onay_verildi.add(message.author.id)
                 await message.channel.send('Onay alındı. Şimdi komutları kullanabilirsiniz.')
 
-# JSON verileri
-veriler = {
-    "kullanici_id": 12345,
-    "para": 200
-}
+# Burada kullanıcının onayını aldığınız bir kod parçası olmalı, sonra sozlesme_onaylandi fonksiyonunu çağırarak işlemi tamamlayabilirsiniz
 
-# JSON dosyası yolu
-dosya_yolu = '/content/drive/MyDrive/Colab Veritabanı/veriler.json'
-
-# JSON verilerini dosyaya yazma
-with open(dosya_yolu, 'w') as dosya:
-    json.dump(veriler, dosya)
-
-print("JSON verileri başarıyla dosyaya yazıldı.")
-
-            finally:
-                await asyncio.sleep(60)
-                onay_verildi.remove(message.author.id)
-    else:
-        await bot.process_commands(message)
-
+# Örnek kullanıcı ID'si
+ornek_kullanici_id = message.author.id
 
 @bot.command(name='maç', help='Zorluk seviyesine göre bir maç oyna.')
 async def mac(ctx, zorluk_seviyesi: int):
