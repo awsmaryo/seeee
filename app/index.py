@@ -6,8 +6,11 @@ import nest_asyncio
 import torch
 from pyngrok import ngrok
 from discord.ext import commands, tasks
+from dotenv import load_dotenv
+import os
 
-
+# .env dosyasını yükleyin
+load_dotenv()
 
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
@@ -259,7 +262,7 @@ async def mac(ctx, zorluk_seviyesi: int):
 
 
 # Botu çalıştır
-bot.run('MTIwMjkwMDU2MDg5MDY5MTY3NA.GHBHJB.7hWVKEH2fhGEIMVqQk4Wa77vwkdI8T6ycRPxBY')
+bot.run(os.getenv('token'))
 
 while True:
     pass
