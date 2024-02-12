@@ -189,6 +189,6 @@ async def mac(ctx, zorluk_seviyesi: int):
 
 # Botu çalıştır
 bot.run(token)
-
-while True:
-    pass
+# while True:
+#    pass
+#
