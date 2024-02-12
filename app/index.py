@@ -11,6 +11,8 @@ import asyncio
 from dotenv import load_dotenv
 import os
 
+token = 'MTIwNjYwNjM1MjM0NDk0MDU2NQ.GZH9tj.42Aqx8qgIdU_FkTZwKysFQEsK1VzAEGB80sHCM'
+
 # .env dosyasını yükleyin
 load_dotenv()
 
@@ -186,7 +188,7 @@ async def mac(ctx, zorluk_seviyesi: int):
         await ctx.send(':( Kaleci daha yok! Şut atmaya devam et. !şut yaz.')
 
 # Botu çalıştır
-bot.run(os.getenv('token'))
+bot.run(token)
 
 while True:
     pass
